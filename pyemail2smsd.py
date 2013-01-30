@@ -49,7 +49,11 @@ for part in mail.walk():
 		body = ""
 
 # adds the sender email as signature
-body += "--\n"+str(mail["From"])+ "\n"
+if mail.has_key('From'):
+	sender = mail['From']
+else:
+	sender = mail['Return-Path']
+body += "--\n"+sender+ "\n"
 
 sms += body
 

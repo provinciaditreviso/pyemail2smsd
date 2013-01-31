@@ -28,37 +28,52 @@ import os
 # Set the path of the outgoing folder for smstools
 OUTQUEUEDIR = "/var/spool/sms/outgoing/"
 
-# Keeps the stdin, since is used as pipe on postfix
-mail = email.message_from_string(sys.stdin.read())
-sms = ""
-sms += "To: " + mail["X-Original-To"] + "\n"
+# Extracts the body of a message. 
+# in_part is a flag to determine if we're or not analyzing a part, to avoid loops on recursion
+def getBody(msg):
+	b = ""
+	for part in msg.walk():
+		if part.is_multipart():
+			for subpart in part.walk():
+				if subpart.get_content_type() == 'text/plain':
+					content = subpart.get_payload()
+					# at the first empty line, stops building the message
+					for row in content.splitlines():
+						if len(row) > 0:
+							b += row+"\n"
+						else:
+							break
+				else:
+					b += ""
+			break
+		if part.get_content_type() == 'text/plain':
+			content = part.get_payload()
+			# at the first empty line, stops building the message
+			for row in content.splitlines():
+				if len(row) > 0:
+					b += row+"\n"
+				else:
+					break
+		else:
+			b += ""
+	return b
 
-body = "\n"
-
-# Only plain text part is allowed, else the sms will be blank.
-for part in mail.walk():
-	if part.get_content_type() == 'text/plain':
-		content = part.get_payload()
-		# at the first empty line, stops building the message
-		for row in content.splitlines():
-			if len(row) > 0:
-				body += row+"\n"
-			else:
-				break
+if __name__=="__main__":
+	# Keeps the stdin, since is used as pipe on postfix
+	inmsg = sys.stdin.read()
+	mail = email.message_from_string(inmsg)
+	sms = "To: " + mail["X-Original-To"] + "\n\n"	
+	body = "\n"
+	body += getBody(mail)
+	# adds the sender email as signature
+	if mail.has_key('From'):
+		sender = mail['From']
 	else:
-		body = ""
-
-# adds the sender email as signature
-if mail.has_key('From'):
-	sender = mail['From']
-else:
-	sender = mail['Return-Path']
-body += "--\n"+sender+ "\n"
-
-sms += body
-
-# Write the sms to the OUTQUEUEDIR
-fdsms, fsms = tempfile.mkstemp(prefix="sms-",dir=OUTQUEUEDIR)
-outf=os.fdopen(fdsms,'wt')
-outf.write(sms)
-outf.close()
+		sender = mail['Return-Path']
+	body += "--\n"+sender+ "\n"
+	sms += body	
+	# Write the sms to the OUTQUEUEDIR
+	fdsms, fsms = tempfile.mkstemp(prefix="sms-",dir=OUTQUEUEDIR)
+	outf=os.fdopen(fdsms,'wt')
+	outf.write(sms)
+	outf.close()

@@ -37,21 +37,27 @@ def getBody(msg):
 			for subpart in part.walk():
 				if subpart.get_content_type() == 'text/plain':
 					content = subpart.get_payload()
-					# at the first empty line, stops building the message
+					# at the first empty line after the text, stops building the message
+					found = False
 					for row in content.splitlines():
-						if len(row) > 0:
+						if len(row) > 0 or not found:
 							b += row+"\n"
+							if len(row)>0:
+								found = True
 						else:
 							break
-				else:
-					b += ""
+					else:
+						b += ""
 			break
 		if part.get_content_type() == 'text/plain':
 			content = part.get_payload()
-			# at the first empty line, stops building the message
+			# at the first empty line after the text, stops building the message
+			found = False
 			for row in content.splitlines():
-				if len(row) > 0:
+				if len(row) > 0 or not found:
 					b += row+"\n"
+					if len(row)>0:
+						found = True
 				else:
 					break
 		else:

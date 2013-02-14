@@ -27,6 +27,7 @@ class HandleEvents(pyinotify.ProcessEvent):
 			destination = get_destinations(sender)
                         smtpresult = session.sendmail(sender, destination, txt)
                         logger.info('Delivered sms to '+str(destination))
+			os.remove(event.path+'/'+event.name)
 		except Exception as exc:
                             logging.error('Unable to deliver message to destinations: '+exc.__str__())
 		

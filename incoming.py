@@ -21,7 +21,7 @@ class HandleEvents(pyinotify.ProcessEvent):
 			sender = "unknown@smsmaker.com"
 		txt = ''
 		for part in message.walk():
-			txt += str(part)
+			txt += str(part).replace(":", " ")
 		try:
 			session = smtplib.SMTP('posta.provincia.treviso.it')
 			destination = get_destinations(sender)

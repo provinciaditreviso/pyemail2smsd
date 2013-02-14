@@ -24,9 +24,10 @@ class HandleEvents(pyinotify.ProcessEvent):
 			txt += str(part)
 		try:
 			session = smtplib.SMTP('posta.provincia.treviso.it')
+			destination = get_destinations(sender)
                         smtpresult = session.sendmail(sender, destination, txt)
                         logger.info('Delivered sms to '+str(destination))
-                        except Exception as exc:
+		except Exception as exc:
                             logging.error('Unable to deliver message to destinations: '+exc.__str__())
 		
 		
@@ -35,11 +36,11 @@ class HandleEvents(pyinotify.ProcessEvent):
 		logging.critical("file "+event.name+" disappeared!");
 
 # Placeholder for future extension
-def get_destinations(from):
+def get_destinations(sender):
 	return ['ced@provincia.treviso.it']
 
 if __name__ == "__main__":
-	logging.basicConfig(filename='/var/log/smsd/incoming.log',level=LOG_LEVEL,format='%(asctime)s - %(levelname)s - %(message)s')
+	logging.basicConfig(filename='/var/log/smsd/incoming.log',level=logging.INFO,format='%(asctime)s - %(levelname)s - %(message)s')
 	logging.info('Service started')
 	# Inotify Configurations
 	wm = pyinotify.WatchManager()  # Watch Manager

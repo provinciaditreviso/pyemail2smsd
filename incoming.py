@@ -40,7 +40,7 @@ def get_destinations(sender):
 	return ['ced@provincia.treviso.it']
 
 if __name__ == "__main__":
-	logging.basicConfig(filename='/var/log/smsd/incoming.log',level=logging.INFO,format='%(asctime)s - %(levelname)s - %(message)s')
+	logging.basicConfig(filename='/var/log/smstools/incoming.log',level=logging.INFO,format='%(asctime)s - %(levelname)s - %(message)s')
 	logging.info('Service started')
 	# Inotify Configurations
 	wm = pyinotify.WatchManager()  # Watch Manager

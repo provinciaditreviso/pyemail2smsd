@@ -48,6 +48,6 @@ if __name__ == "__main__":
 	p = HandleEvents()
 	notifier = pyinotify.Notifier(wm, p)
 	# Checks all events about messages received
-	wdd = wm.add_watch('/var/spool/smsd/incoming/', mask, rec=True,auto_add=True)
+	wdd = wm.add_watch('/var/spool/sms/incoming/', mask, rec=True,auto_add=True)
 	notifier.loop()
 

@@ -6,7 +6,7 @@ from pprint import pprint
 import pyinotify
 import logging
 import smtplib
-
+import email
 
 # IN_CLOSE_WRITE event management
 class HandleEvents(pyinotify.ProcessEvent):

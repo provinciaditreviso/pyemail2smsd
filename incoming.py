@@ -11,7 +11,9 @@ import email
 # IN_CLOSE_WRITE event management
 class HandleEvents(pyinotify.ProcessEvent):
     def process_IN_CLOSE_WRITE(self, event):
-                                
+        if event.name[:3] != "GSM":
+		logging.info("File "+event.name+" is not an inbound message. Skipping...")
+		return
         if os.path.isfile(event.path+'/'+event.name):
 		message = email.message_from_file(open(event.path+'/'+event.name))
 		if message.has_key('From'):

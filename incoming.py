@@ -50,7 +50,7 @@ def get_destinations(sender):
 	conn = sqlite3.connect(DBPATH+'return_path.db')
 	c = conn.cursor()
 	# Do a cleanup on the db to clean entries that are too old
-	c.execute("DELETE FROM returnpath WHERE timestamp <= ?",(discardtime))
+	c.execute("DELETE FROM returnpath WHERE timestamp <= ?",(discardtime, ))
 	# Extract emails who has sent to that number in the last 48h
 	c.execute("SELECT sender FROM returnpath WHERE number = ? and timestamp > ?",svals)
 	res = c.fetchall()

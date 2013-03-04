@@ -28,6 +28,7 @@ import time
 
 # Set the path of the outgoing folder for smstools
 OUTQUEUEDIR = "/var/spool/sms/outgoing/"
+DBPATH = "./"
 
 # Extracts the body of a message. 
 # in_part is a flag to determine if we're or not analyzing a part, to avoid loops on recursion

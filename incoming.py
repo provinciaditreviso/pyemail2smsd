@@ -11,7 +11,7 @@ import sqlite3
 import time
 
 
-DBPATH = "./"
+DBPATH = "/var/spool/sms/"
 
 # IN_CLOSE_WRITE event management
 class HandleEvents(pyinotify.ProcessEvent):
@@ -58,7 +58,7 @@ def get_destinations(sender):
 	for r in res:
 		rvals = (sender[2:],r,discardtime)
 		c.execute("DELETE FROM returnpath WHERE number = ? and sender = ? and timestamp > ?",rvals)
-	c.commit()
+	conn.commit()
 	conn.close()
 	return list(res)
 

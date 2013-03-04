@@ -29,7 +29,7 @@ import re
 
 # Set the path of the outgoing folder for smstools
 OUTQUEUEDIR = "/var/spool/sms/outgoing/"
-DBPATH = "./"
+DBPATH = "/var/spool/sms/"
 
 # Extracts the body of a message. 
 # in_part is a flag to determine if we're or not analyzing a part, to avoid loops on recursion
@@ -75,7 +75,7 @@ def saveReturnPath(sender,dest):
 	results = r.findall(sender)
 	elements = (results.pop(), dest, int(time.time()))
 	c.execute("INSERT INTO returnpath VALUES (?, ?, ?)",elements)
-	c.commit()
+	conn.commit()
 	conn.close()	
 
 if __name__=="__main__":

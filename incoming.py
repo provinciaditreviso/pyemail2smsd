@@ -10,6 +10,7 @@ import email
 import sqlite3
 import time
 
+
 DBPATH = "./"
 
 # IN_CLOSE_WRITE event management
@@ -45,7 +46,7 @@ class HandleEvents(pyinotify.ProcessEvent):
 # Placeholder for future extension
 def get_destinations(sender):
 	discardtime = int(time.time()) - 24*60*60
-	svals = (sender,discardtime)
+	svals = (sender[2:],discardtime)
 	conn = sqlite3.connect(DBPATH+'return_path.db')
 	c = conn.cursor()
 	# Do a cleanup on the db to clean entries that are too old
@@ -55,7 +56,7 @@ def get_destinations(sender):
 	res = c.fetchall()
 	# Remove that entries, supposing that has been treated
 	for r in res:
-		rvals = (sender,r,discardtime)
+		rvals = (sender[2:],r,discardtime)
 		c.execute("DELETE FROM returnpath WHERE number = ? and sender = ? and timestamp > ?",rvals)
 	conn.close()
 	return list(res)

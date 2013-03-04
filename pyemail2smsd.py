@@ -25,6 +25,7 @@ import tempfile
 import os
 import sqlite3
 import time
+import re
 
 # Set the path of the outgoing folder for smstools
 OUTQUEUEDIR = "/var/spool/sms/outgoing/"

@@ -56,7 +56,7 @@ def get_destinations(sender):
 	res = c.fetchall()
 	# Remove that entries, supposing that has been treated
 	for r in res:
-		rvals = (sender,r,discardtime)
+		rvals = (sender,r[0],discardtime)
 		c.execute("DELETE FROM returnpath WHERE number = ? and sender = ? and timestamp > ?",rvals)
 	conn.commit()
 	conn.close()

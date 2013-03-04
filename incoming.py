@@ -60,7 +60,10 @@ def get_destinations(sender):
 		c.execute("DELETE FROM returnpath WHERE number = ? and sender = ? and timestamp > ?",rvals)
 	conn.commit()
 	conn.close()
-	return res
+	if len(res) > 0:	
+		return res
+	else:
+		retunr ('ced@provincia.treviso.it',)
 
 if __name__ == "__main__":
 	logging.basicConfig(filename='/var/log/smstools/incoming.log',level=logging.INFO,format='%(asctime)s - %(levelname)s - %(message)s')

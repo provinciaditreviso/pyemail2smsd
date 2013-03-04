@@ -7,6 +7,10 @@ import pyinotify
 import logging
 import smtplib
 import email
+import sqlite3
+import time
+
+DBPATH = "./"
 
 # IN_CLOSE_WRITE event management
 class HandleEvents(pyinotify.ProcessEvent):
@@ -40,7 +44,21 @@ class HandleEvents(pyinotify.ProcessEvent):
 
 # Placeholder for future extension
 def get_destinations(sender):
-	return ['ced@provincia.treviso.it']
+	discardtime = int(time.time()) - 24*60*60
+	svals = (sender,discardtime)
+	conn = sqlite3.connect(DBPATH+'return_path.db')
+	c = conn.cursor()
+	# Do a cleanup on the db to clean entries that are too old
+	c.execute("DELETE FROM returnpath WHERE timestamp <= ?",(discardtime))
+	# Extract emails who has sent to that number in the last 48h
+	c.execute("SELECT sender FROM returnpath WHERE number = ? and timestamp > ?",svals)
+	res = c.fetchall()
+	# Remove that entries, supposing that has been treated
+	for r in res:
+		rvals = (sender,r,discardtime)
+		c.execute("DELETE FROM returnpath WHERE number = ? and sender = ? and timestamp > ?",rvals)
+	conn.close()
+	return list(res)
 
 if __name__ == "__main__":
 	logging.basicConfig(filename='/var/log/smstools/incoming.log',level=logging.INFO,format='%(asctime)s - %(levelname)s - %(message)s')

@@ -23,7 +23,8 @@ import email
 import sys
 import tempfile
 import os
-
+import sqlite3
+import time
 
 # Set the path of the outgoing folder for smstools
 OUTQUEUEDIR = "/var/spool/sms/outgoing/"
@@ -64,6 +65,16 @@ def getBody(msg):
 			b += ""
 	return b
 
+
+def saveReturnPath(sender,dest):
+	conn = sqlite3.connect(DBPATH+'return_path.db')
+	r = re.compile(r'(\b[\w.]+@+[\w.]+.+[\w.]\b)')
+	results = r.findall(sender)
+	elements = (results.pop(), dest, int(time.time()))
+	c.execute("INSERT INTO returnpath VALUES (?, ?, ?)",elements)
+	c.commit()
+	conn.close()	
+
 if __name__=="__main__":
 	# Keeps the stdin, since is used as pipe on postfix
 	inmsg = sys.stdin.read()
@@ -76,6 +87,7 @@ if __name__=="__main__":
 		sender = mail['From']
 	else:
 		sender = mail['Return-Path']
+	saveReturnPath(sender,mail["X-Original-To"])
 	body += "--\n"+sender+ "\n"
 	sms += body	
 	# Write the sms to the OUTQUEUEDIR

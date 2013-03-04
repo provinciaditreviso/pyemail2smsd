@@ -58,6 +58,7 @@ def get_destinations(sender):
 	for r in res:
 		rvals = (sender[2:],r,discardtime)
 		c.execute("DELETE FROM returnpath WHERE number = ? and sender = ? and timestamp > ?",rvals)
+	c.commit()
 	conn.close()
 	return list(res)
 

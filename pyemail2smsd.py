@@ -70,6 +70,7 @@ def getBody(msg):
 
 def saveReturnPath(sender,dest):
 	conn = sqlite3.connect(DBPATH+'return_path.db')
+	c = conn.cursor()
 	r = re.compile(r'(\b[\w.]+@+[\w.]+.+[\w.]\b)')
 	results = r.findall(sender)
 	elements = (results.pop(), dest, int(time.time()))
